@@ -27,7 +27,7 @@ fn main() {
             url = "https://c.xkcd.com/random/comic/".to_string();
         }
 
-        //println!("{}", url);
+        println!("Comic URL: {}", url);
 
         // Get the url requested by the user or a random one
         let mut res = reqwest::get(&url).unwrap();
@@ -39,19 +39,29 @@ fn main() {
 
         let document = Document::from(html.as_ref());
 
-        let mut image_url = "https://xkcd.com".to_string();
+        let mut image_url = "https:".to_string();
+
+        let mut picture_name = "";
+
         // Find the image url in the html
         for element in document.find(Attr("id", "comic").descendant(Name("img"))) {
-            image_url.push_str(element.attr("src").unwrap());
-            println!("{}", image_url);
+            picture_name = element.attr("src").unwrap();
+            image_url.push_str(picture_name);
+            println!("Image URL: {}", image_url);
         }
 
         let mut resp = reqwest::get(&image_url).expect("request failed");
 
-        let mut out = File::create("created_image.png").expect("failed to create file");
+        picture_name = picture_name.split("/").nth(4).unwrap();
+
+        println!("Picture name: {}", picture_name);
+
+        // Create the picture file
+        let mut out = File::create(picture_name.to_string()).expect("failed to create file");
         io::copy(&mut resp, &mut out).expect("failed to copy content");
 
-        image_to_ascii("image.jpg".to_string());
+        // Convert the picture file to ascii
+        image_to_ascii(picture_name.to_string());
 
 }
 
