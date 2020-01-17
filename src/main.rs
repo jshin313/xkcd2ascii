@@ -4,12 +4,11 @@ use select::document::Document;
 use select::predicate::{Attr, Name, Predicate};
 
 // For asciify
-//extern crate image;
-//extern crate clap;
-
 use std::str::from_utf8;
 use std::path::Path;
 
+use std::io;
+use std::fs::File;
 
 fn main() {
 
@@ -47,7 +46,12 @@ fn main() {
             println!("{}", image_url);
         }
 
-        image_to_ascii("test.gif");
+        let mut resp = reqwest::get(&image_url).expect("request failed");
+
+        let mut out = File::create("created_image.png").expect("failed to create file");
+        io::copy(&mut resp, &mut out).expect("failed to copy content");
+
+        image_to_ascii("image.jpg".to_string());
 
 }
 
@@ -77,7 +81,7 @@ fn intensity_to_ascii(value: &u8) -> &str {
     ascii_chars[ (n_chars - 1) as usize ]
 }
 
-fn image_to_ascii(image_name: &str) {
+fn image_to_ascii(image_name: String) {
 
     // open image as new dynamic image
     let img = match image::open(&Path::new(&image_name)) {
