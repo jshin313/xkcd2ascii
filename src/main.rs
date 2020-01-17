@@ -4,8 +4,8 @@ use select::document::Document;
 use select::predicate::{Attr, Name, Predicate};
 
 // For asciify
-extern crate image;
-extern crate clap;
+//extern crate image;
+//extern crate clap;
 
 use std::str::from_utf8;
 use std::path::Path;
