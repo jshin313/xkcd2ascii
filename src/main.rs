@@ -9,7 +9,6 @@ extern crate clap;
 
 use std::str::from_utf8;
 use std::path::Path;
-use clap::{Arg, App};
 
 
 fn main() {
@@ -48,6 +47,7 @@ fn main() {
             println!("{}", image_url);
         }
 
+        image_to_ascii("test.gif");
 
 }
 
@@ -79,27 +79,14 @@ fn intensity_to_ascii(value: &u8) -> &str {
 
 fn image_to_ascii(image_name: &str) {
 
-    let matches = App::new("asciify")
-         .version("0.0.1")
-         .author("edelsonc")
-         .about("Turn an image into ascii art!")
-         .args( &[
-         Arg::from_usage("<INPUT> 'Sets the image file'"),
-         Arg::from_usage("[resize] -s, --resize [width] [height] 'Rescale image; does not preserve aspect ratio'"),
-         ])
-        .get_matches();
-
     // open image as new dynamic image
     let img = match image::open(&Path::new(&image_name)) {
         Ok(p) => p,
-        Err(e) => panic!("Not a valid image path or could no open image"),
+        Err(_) => panic!("Not a valid image path or could no open image"),
     };
 
     // resize image as an option if its very large...defaults to screen width
-    let dims = match matches.values_of_lossy("resize") {
-        Some(v) => v.iter().map(|s| s.parse::<u32>().unwrap()).collect(),
-        None => vec![80u32, 40u32],
-    };
+    let dims = vec![80u32, 40u32];
 
     let img = img.resize_exact(dims[0], dims[1], image::FilterType::Nearest);
 
